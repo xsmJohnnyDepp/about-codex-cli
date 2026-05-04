@@ -1,7 +1,7 @@
 # Codex CLI 新手 Cheat Sheet（PowerShell 版）
 
 **適用環境**
-Windows + PowerShell
+Windows + PowerShell，內容以 `codex-cli 0.128.0` 為準。
 
 **快速開始**
 1. 啟動互動模式（最常用）
@@ -15,13 +15,18 @@ codex
 codex "請幫我解釋這個專案"
 ```
 
-**安裝與登入**
+**安裝、更新與登入**
 1. 安裝
 ```powershell
 # 使用 npm 全域安裝
 npm install -g @openai/codex
 ```
-2. 登入與狀態
+2. 更新
+```powershell
+# 更新到最新版 Codex CLI
+codex update
+```
+3. 登入與狀態
 ```powershell
 # 互動式登入（建議）
 codex login
@@ -36,29 +41,39 @@ codex logout
 **互動模式常用指令**
 1. 指定模型
 ```powershell
-# 指定模型啟動
-codex -m gpt-4o "幫我重構這段程式碼"
+# 指定模型啟動；可依公司帳號可用模型調整
+codex -m gpt-5.4 "幫我重構這段程式碼"
 ```
 2. 附加圖片
 ```powershell
 # 帶入截圖或圖片檔
 codex -i .\screenshot.png "修正 UI 問題"
 ```
-3. 自動核准（小心使用）
+3. 指定 sandbox
 ```powershell
-# 自動核准工作區內修改
-codex --full-auto "整理這個模組的結構"
+# 允許 Codex 修改工作區內檔案
+codex --sandbox workspace-write "整理這個模組的結構"
 ```
 4. 指定工作目錄
 ```powershell
 # 以指定目錄作為工作區
 codex -C .\my-project "分析這個專案"
 ```
-5. 引用檔案（@）
+5. 引用檔案（@ 或 /mention）
 ```powershell
 # 在互動提示中用 @ 引用檔案
 請讀取 @src\app.ts 並解釋主要流程
 ```
+
+**互動輸入小技巧**
+```powershell
+Enter    送出目前提示
+Ctrl+J   插入換行，適合輸入多行需求
+@        搜尋並引用工作區內的檔案或資料夾
+Alt+V    貼上剪貼簿圖片；若終端不支援，改用 -i 或圖片檔路徑
+Ctrl+C   中斷目前動作或離開 CLI
+```
+圖片貼上會受作業系統、終端機與剪貼簿格式影響。Windows + PowerShell 可先試 `Alt+V`；若沒有成功，建議把截圖存成 `.png` 後用 `codex -i .\screenshot.png "你的提示"`，或在對話中直接提供圖片檔路徑。
 
 **互動模式內建命令（/）**
 1. 叫出清單
@@ -66,21 +81,57 @@ codex -C .\my-project "分析這個專案"
 # 在 composer 內輸入 / 叫出指令清單並可搜尋
 /
 ```
-2. 常用指令速查
+2. 必學指令
 ```
 /model        切換模型
-/status       查看目前 session 狀態（模型/核准策略/可寫目錄/ token）
 /permissions  變更核准/權限模式（例如 Auto / Read Only）
+/status       查看目前 session 狀態（模型/核准策略/可寫目錄/token）
 /diff         顯示 Git 變更（含未追蹤檔案）
+/mention      附加檔案或資料夾到對話
 /compact      壓縮長對話摘要以節省 context
+/new          在同一個 CLI 內開始新對話
+/resume       繼續先前 session
+/plan         先進入計畫模式，確認做法後再修改
 /review       讓 Codex 檢視工作樹
-/init         產生 AGENTS.md 範本
-/mention      附加檔案到對話
-/mcp          列出可用 MCP 工具
-/apps         瀏覽並插入 apps 連結器
-/logout       登出
+/init         產生 AGENTS.md 範本，讓 Codex 讀懂專案規則
 /quit, /exit  離開 CLI
 ```
+3. 知道即可
+```
+/fast                  切換快速模式
+/fork                  從先前 session 分支，適合嘗試不同解法
+/mcp                   列出可用 MCP 工具；通常由團隊先設定
+/personality           調整回覆風格
+/copy                  複製最後回覆
+/apps                  瀏覽並插入 apps 連結器
+/plugins               管理或瀏覽 plugins
+/agent                 使用或管理 agent 相關功能
+/side                  開啟 side chat
+/sandbox-add-read-dir  增加 sandbox 可讀資料夾
+/statusline            編輯狀態列
+/title                 編輯終端標題
+/keymap                調整快捷鍵設定
+/feedback              回報意見
+```
+`/approvals` 仍可作為 alias，但新手優先使用 `/permissions`。
+
+`AGENTS.md` 是專案給 Codex 的說明文件，通常放在專案根目錄。可以寫入專案結構、常用指令、測試方式、命名規則與團隊偏好的工作流程，讓 Codex 每次進入專案時先遵守同一套規則。
+
+**常用子命令速覽**
+```powershell
+codex exec      # 非互動執行，適合腳本/CI
+codex review    # 非互動 code review
+codex apply     # 套用 Codex 產生的最新 diff
+codex resume    # 恢復先前互動 session
+codex fork      # 從先前 session 分支
+codex update    # 更新 Codex CLI
+codex plugin    # 管理 Codex plugins
+codex features  # 查看 feature flags
+codex app       # 啟動 Codex desktop app
+codex sandbox   # 在 Codex sandbox 內執行命令
+codex mcp       # 管理 MCP server
+```
+`cloud`、`app-server`、`exec-server` 屬於進階或實驗用途，新手先不用放進主流程。
 
 **常見問題排除**
 1. 無法登入或憑證異常
@@ -136,20 +187,30 @@ codex sandbox windows -- dir
 # 非互動執行
 codex exec "替所有 API 增加錯誤處理"
 ```
-2. JSON 輸出
+2. 允許修改工作區
+```powershell
+# 明確指定 sandbox；新腳本不要再用 --full-auto
+codex exec --sandbox workspace-write "修正所有 lint 錯誤"
+```
+3. JSON 輸出
 ```powershell
 # 以 JSON Lines 輸出
 codex exec --json "列出所有 TODO 註解"
 ```
-3. 從 stdin 讀取提示
+4. 從 stdin 讀取提示
 ```powershell
 # 從管線輸入提示
 "修正所有 lint 錯誤" | codex exec -
 ```
-4. 使用輸出 schema
+5. 使用輸出 schema
 ```powershell
 # 使用 JSON schema 讓輸出結構化
 codex exec --output-schema .\schema.json "列出所有函式簽名"
+```
+6. 將最後回覆寫入檔案
+```powershell
+# -o 是 --output-last-message 的短寫
+codex exec -o .\api-docs.txt "產生 API 文件"
 ```
 
 **Code Review**
@@ -190,35 +251,38 @@ codex fork --last
 1. 主要設定檔
 ```toml
 # ~/.codex/config.toml（重點示例）
-model = "gpt-4o"
-approval_policy = "on-failure"
+model = "gpt-5.4"
+approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 ```
+`on-failure` 已 deprecated；互動使用建議改用 `on-request`，非互動可依需求使用 `never`。
+
 2. CLI 覆蓋設定
 ```powershell
-# 覆蓋模型
-codex -c model=gpt-4o "你的提示"
+# 覆蓋模型；可依公司帳號可用模型調整
+codex -c model=gpt-5.4 "你的提示"
 
 # 同時覆蓋多個設定
-codex -c model=gpt-4o -c approval_policy=never "你的提示"
+codex -c model=gpt-5.4 -c approval_policy=never "你的提示"
 ```
 
 **安全與 Sandbox 重點**
-1. 自動核准模式
+1. 允許工作區寫入
 ```powershell
-# 會自動核准所有動作（注意風險）
-codex --full-auto "修正所有檔案格式"
+# 允許修改工作區內檔案
+codex exec --sandbox workspace-write "修正所有檔案格式"
 ```
-2. 完全跳過核准（非常危險）
+2. 完全跳過核准與 sandbox（非常危險）
 ```powershell
-# 會跳過所有核准與 sandbox（請非常小心）
-codex exec --yolo "執行遷移腳本"
+# 會跳過所有核准與 sandbox；只在隔離環境使用
+codex exec --dangerously-bypass-approvals-and-sandbox "執行遷移腳本"
 ```
 3. Windows sandbox 測試
 ```powershell
-# 在 Windows sandbox 內執行指令
+# 在 Windows sandbox 內執行命令
 codex sandbox windows -- dir
 ```
+`--full-auto` 在 `codex exec` 仍可相容解析，但已 deprecated；新用法請改成明確的 `--sandbox workspace-write`。
 
 **常見情境速查**
 1. 解釋整個專案
@@ -238,8 +302,8 @@ codex "修正登入流程的例外處理"
 ```
 4. 產生文件
 ```powershell
-# 產生 API 文件
-codex exec --last-message-file .\api-docs.txt "產生 API 文件"
+# 產生 API 文件，並把最後回覆寫入檔案
+codex exec -o .\api-docs.txt "產生 API 文件"
 ```
 5. 快速 review
 ```powershell
@@ -248,11 +312,12 @@ codex review --uncommitted
 ```
 6. 指定模型處理複雜任務
 ```powershell
-# 指定模型執行較複雜工作
-codex -m gpt-4o "重構這個模組並補上測試建議"
+# 指定模型執行較複雜工作；可依公司帳號可用模型調整
+codex -m gpt-5.4 "重構這個模組並補上測試建議"
 ```
 
 **小提醒**
 1. 初學者建議先使用 `codex` 互動模式熟悉流程。
-2. `--full-auto` 與 `--yolo` 風險高，請確認環境與需求後再用。
-3. 需要在其他資料夾工作時，記得用 `-C` 指定目錄。
+2. 需要讓 Codex 修改檔案時，優先明確指定 `--sandbox workspace-write`。
+3. `--dangerously-bypass-approvals-and-sandbox` 風險很高，只在隔離環境使用。
+4. 需要在其他資料夾工作時，記得用 `-C` 指定目錄。
