@@ -5,7 +5,7 @@
 ## 分享目標
 
 - 了解 Codex CLI 是什麼，以及它和一般聊天式 AI 工具的差異。
-- 理解 token、context window、sandbox、approval 等基本概念。
+- 理解 token、context window、agent、上下文管理等基本概念。
 - 學會在 Windows + PowerShell 環境中啟動、提問、引用檔案、檢查 diff。
 - 透過兩個 green field lab 看懂「如何把需求交給 Codex」。
 - 建立進階觀念：`AGENTS.md`、skill、agent、MCP / plugin 各自解決什麼問題。
@@ -30,16 +30,23 @@
 
 重點：
 
+- Codex CLI 是會在本機工作目錄中讀檔、改檔、執行命令的 agent，不只是聊天工具。
+- Codex 不會一開始就自動理解整個專案，而是透過需求、`AGENTS.md`、檔案內容和工具輸出建立上下文。
+- 使用 Markdown 格式寫提示，可以更清楚區分目標、範圍、限制和驗收條件。
 - `token` 是模型處理文字的基本單位，不等於一個中文字或一個英文單字。
 - `context window` 是模型一次工作時能同時參考的 token 空間。
 - 長需求、長 log、大量檔案、長對話都會消耗 context。
+- `git status`、`git diff`、測試輸出、錯誤訊息等工具結果也會占用 context。
 - `/compact` 的用途是壓縮前文，釋放 context 空間。
 - `AGENTS.md` 可以放專案規則，避免每次重複貼同樣指示。
+- 使用者仍然要負責 review Codex 的輸出，尤其是檔案修改、命令執行和具有時效性的資訊。
 
 建議提醒：
 
 - 不要一次把整個專案都丟給 Codex。
 - 先描述目標，再讓 Codex 用 `rg`、`git diff`、目錄結構去找相關檔案。
+- 不要貼密碼、API key、cookie、token 或客戶資料。
+- 修改後用 `/diff` 或 `git diff` 檢查實際變更。
 - 任務變長時，用 `/status` 觀察 session 狀態。
 
 ### 3. 快速上手
@@ -87,7 +94,7 @@ codex -i .\screenshot.png "修正這個 UI 問題"
 建議示範順序：
 
 1. 啟動 `codex`。
-2. 用 `/status` 看目前模型、sandbox、approval 狀態。
+2. 用 `/status` 看目前模型與 session 狀態。
 3. 用 `@` 或 `/mention` 引用一個檔案。
 4. 請 Codex 做一個小修改。
 5. 用 `/diff` 檢查變更。
