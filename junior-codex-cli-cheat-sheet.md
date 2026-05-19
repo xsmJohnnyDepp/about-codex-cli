@@ -1,7 +1,7 @@
 # Codex CLI 新手 Cheat Sheet（PowerShell 版）
 
 **適用環境**
-Windows + PowerShell，內容以 `codex-cli 0.128.0` 為準。
+Windows + PowerShell，內容以 `codex-cli 0.131.0` 為準。可用 `codex --version` 確認本機版本。
 
 **快速開始**
 1. 啟動互動模式（最常用）
@@ -54,12 +54,17 @@ codex -i .\screenshot.png "修正 UI 問題"
 # 允許 Codex 修改工作區內檔案
 codex --sandbox workspace-write "整理這個模組的結構"
 ```
-4. 指定工作目錄
+4. 啟用即時搜尋
+```powershell
+# 讓模型可使用內建 web_search 工具
+codex --search "整理最近的 release notes 重點"
+```
+5. 指定工作目錄
 ```powershell
 # 以指定目錄作為工作區
 codex -C .\my-project "分析這個專案"
 ```
-5. 引用檔案（@ 或 /mention）
+6. 引用檔案（@ 或 /mention）
 ```powershell
 # 在互動提示中用 @ 引用檔案
 請讀取 @src\app.ts 並解釋主要流程
@@ -121,17 +126,19 @@ Ctrl+C   中斷目前動作或離開 CLI
 ```powershell
 codex exec      # 非互動執行，適合腳本/CI
 codex review    # 非互動 code review
-codex apply     # 套用 Codex 產生的最新 diff
+codex apply     # 套用指定 Codex task 的 diff，需提供 TASK_ID
 codex resume    # 恢復先前互動 session
 codex fork      # 從先前 session 分支
 codex update    # 更新 Codex CLI
+codex doctor    # 診斷本機安裝、設定與登入狀態
 codex plugin    # 管理 Codex plugins
 codex features  # 查看 feature flags
+codex completion # 產生 shell completion 腳本
 codex app       # 啟動 Codex desktop app
 codex sandbox   # 在 Codex sandbox 內執行命令
 codex mcp       # 管理 MCP server
 ```
-`cloud`、`app-server`、`exec-server` 屬於進階或實驗用途，新手先不用放進主流程。
+`cloud`、`app-server`、`exec-server`、`remote-control`、`mcp-server` 屬於進階或實驗用途，新手先不用放進主流程。
 
 **常見問題排除**
 1. 無法登入或憑證異常
@@ -141,6 +148,9 @@ codex login status
 
 # 重新登入
 codex login
+
+# 診斷本機安裝、設定、登入與執行環境
+codex doctor
 ```
 2. 需要調整核准流程
 ```powershell
