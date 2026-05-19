@@ -17,7 +17,6 @@
 - Node.js LTS 22+  
   https://nodejs.org/en/download
 
-
 接著請用「系統管理員身分」開啟 PowerShell，在 repo 根目錄執行：
 
 ```powershell
@@ -29,6 +28,13 @@
 ```powershell
 rg --version
 grep --version
+```
+
+最後請確認 `npm` 可用，並安裝 Codex CLI：
+
+```powershell
+npm install -g @openai/codex
+codex --version
 ```
 
 ## 參考連結
